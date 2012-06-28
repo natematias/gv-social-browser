@@ -18,36 +18,49 @@ class Archive
 
 end
 
-class Categories
-  @@categories = {}
-  def Categories.get_categories
-    @@categories
+class TwitterAccount
+  @@twitter_accounts = {}
+  attr_accessor :account, :collocations, :posts, :categories
+
+  def initialize(account_name, post)
+    @account = account_name
+    @posts = {}
+    @collocations = {}
+    @categories = {}
+    add_post(post)
   end
-  def Categories.add_post post
-    begin
-    (post.item/'category').each do |category|
-      nicename = category.attributes["nicename"]
-      if !(@@categories.has_key? nicename)
-        @@categories[nicename] = []
-      end
-      @@categories[nicename] << post
-      #puts "adding #{post.title} to #{nicename}"
+
+  def add_post(post)
+    @posts[:id] = post.title
+    @posts.twitter_accounts.each do |account|
+      add_collocation(account) unless account == @account
     end
-    rescue
+    @categories.each do |category|
+      add_category(category)
+    end
+  end
+  
+  def add_collocation(account_name)
+    if @collocations.has_key? account_name
+      @collocations[account_name] += 1
+    else
+      @collocations[account_name] = 1
     end
   end
 
-  def Categories.to_hash
-    all_categories = {}
-    @@categories.each do |category|
-      all_categories[category] = []
-      category.posts.each do |post|
-        all_categories[category] << post.to_hash
-      end
+  def add_category(category)
+    if @categories.has_key? category
+      @categories[category] += 1
+    else
+      @categories[category] = 1
     end
-    all_categories
   end
-end
+
+  def TwitterAccounts.find(account_name)
+    return @twitter_accounts[account_name] if @@twitter_accounts.has_key? account_name
+    return nil
+  end
+  
 
 class Post
   attr_accessor :item, :publication_date, :author, :link, :twitter_accounts, :hashtags, :categories, :title, :post_id
@@ -61,7 +74,6 @@ class Post
     @content = (item/'content:encoded').text
     self.scan_for_twitter_accounts
     self.scan_for_twitter_hashtags
-    Categories.add_post(self)
   end
 
   def scan_for_twitter_accounts
@@ -125,15 +137,6 @@ archives.each do |archive|
     end
   end
 end
-
-graphviz_post_graph_elements.each do |account|
-  graphviz_elements += "#{account} [color=blue]" + "\n"
-end
-
-File.open("graphviz_posts.gv", 'w') {|f| f.write(graphviz_elements + graphviz_post_graph) }
-
-puts "Writing json file for categories"
-File.open("categories.json", "w"){|f| f.write(Categories.to_hash) }
 
 puts "Writing json file for posts"
 all_posts = []

@@ -50,7 +50,7 @@ class Categories
 end
 
 class Post
-  attr_accessor :item, :publication_date, :author, :link, :twitter_accounts, :hashtags, :categories, :title, :post_id
+  attr_accessor :item, :publication_date, :author, :link, :twitter_accounts, :hashtags, :categories, :title, :post_id, :content
 
   def initialize(item)
     @item = item
@@ -104,7 +104,7 @@ Dir.glob(File.join(dirname, "**", "*.xml")).each do |filename|
   archives << Archive.new(filename)
 end
 
-puts "Writing graphviz file of posts => accounts"
+puts "Writing one file for each article"
 #graphviz file with per-post collocation
 graphviz_post_graph_accounts = []
 graphviz_post_graph_posts = []
@@ -114,33 +114,8 @@ graphviz_elements = ""
 archives.each do |archive|
   print "."
   archive.posts.each do |post|
-    graphviz_post_graph_accounts = graphviz_post_graph_accounts | post.twitter_accounts
-    post.twitter_accounts.each do |account_a|
-      graphviz_post_graph += "#{post.post_id} -> #{account_a} [style=dotted,color=blue]" + "\n"
-      post.twitter_accounts.each do |account_b|
-        if(account_a != account_b)
-          graphviz_post_graph += "#{account_a} -- #{account_b}" + "\n"
-        end
-      end
+    File.open("gv-viewer/data/postdata/#{post.post_id}.json", "wb") do |f|
+      f.write(post.to_hash.merge({:content=>post.content}))
     end
   end
 end
-
-graphviz_post_graph_elements.each do |account|
-  graphviz_elements += "#{account} [color=blue]" + "\n"
-end
-
-File.open("graphviz_posts.gv", 'w') {|f| f.write(graphviz_elements + graphviz_post_graph) }
-
-puts "Writing json file for categories"
-File.open("categories.json", "w"){|f| f.write(Categories.to_hash) }
-
-puts "Writing json file for posts"
-all_posts = []
-archives.each do |archive|
-  print "."
-  archive.posts.each do |post|
-    all_posts << post.to_hash
-  end
-end
-File.open("posts.json", "w"){|f| f.write(Categories.to_hash) }

@@ -42,7 +42,8 @@
     </div>
 
     <script type="text/javascript" charset="utf-8" src="lib/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" charset="utf-8" src="lib/miso.ds.deps.min.0.2.0.js"></script>
+<!--    <script type="text/javascript" charset="utf-8" src="lib/miso.ds.deps.min.0.2.0.js"></script>-->
+    <script type="text/javascript" charset="utf-8" src="lib/crossfilter.js"></script>
     <script type="text/javascript" charset="utf-8" src="lib/underscore.js"></script>
     <script type="text/javascript" charset="utf-8" src="lib/backbone.js"></script>
     <script type="text/javascript" charset="utf-8" src="app/models.js"></script>
@@ -50,7 +51,14 @@
     <script type="text/javascript" charset="utf-8" src="app/routers.js"></script>
     <!-- Inline Templates -->
     <script type="text/template" id="twitter_account_rows">
-    <tr><td><%=account%></td><td><%=collocation_count%></td><td><%=posts_count%></td><td><%=last_date%></td></tr>
+    <tr><td><div class="btn btn-info twitter_account"><%=account%></div></td><td><%=collocation_count%></td><td><%=posts_count%></td></tr>
+    </script>
+    <script type="text/template" id="twitter_account_head">
+      <thead>
+        <tr>
+          <th>Name</th><th id="collocation_sort" ><span class="btn">collocation #</span></th><th id="posts_sort" ><span class="btn">post #</span></th>
+        </tr>
+      </thead>
     </script>
   </body>
 </html>

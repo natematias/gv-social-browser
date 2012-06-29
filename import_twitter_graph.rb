@@ -22,21 +22,22 @@ end
 
 class TwitterAccount
   @@twitter_accounts = {}
-  attr_accessor :account, :collocations, :posts, :categories, :first_date, :last_date
+  attr_accessor :account, :collocations, :posts, :categories, :first_date, :last_date, :all_dates
 
   def initialize(account_name, post)
     @account = account_name
     @posts = {}
     @collocations = {}
     @categories = {}
+    @all_dates = []
+    @first_date = post.publication_date
     add_post(post)
   end
 
   def add_post(post)
     @posts[post.post_id] = post.title
     @last_date = post.publication_date
-    @first_date = post.publication_date
-    @last_date = post.publication_date
+    @all_dates << post.publication_date
     post.twitter_accounts.each do |account|
       add_collocation(account) unless account == @account
     end
@@ -86,6 +87,7 @@ class TwitterAccount
      :posts=>@posts,
      :first_date=>@first_date,
      :last_date=>@last_date,
+     :dates=>@all_dates,
      :categories=>@categories}
   end
 end
@@ -115,15 +117,15 @@ class Post
  
   def scan_for_twitter_accounts
     accounts = []
-    matched_accounts = @content.scan(/twitter.com\/\#\!\/(.*?)[\/|"]/)
+    matched_accounts = @content.scan(/twitter.com\/\#\!\/(.*?)[\/|"|\?]/)
     matched_accounts.each do |account|
-      accounts << account[0].downcase unless( account[0].match(/\//) or account[0].match(/search/))
+      accounts << account[0].downcase unless( account[0].match(/\//) or account[0].match(/search/) or account[0].match(/\?/) or account[0].match(/favicon/) or account[0].strip =="")
     end
 
-    twitter_match = @content.scan(/twitter.com\/(.*?)["]/)
+    twitter_match = @content.scan(/twitter.com\/(.*?)["|\?]/)
     # only append things that are not false positives
     twitter_match.each do |m|
-      accounts << m[0].downcase unless( m[0].match(/\//) or m[0].match(/search/))
+      accounts << m[0].downcase unless( m[0].match(/\//) or m[0].match(/search/) or m[0].match(/\?/) or m[0].match(/favicon/) or m[0].strip=="")
     end
     @twitter_accounts = accounts.uniq
   end

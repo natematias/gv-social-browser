@@ -1,5 +1,7 @@
 require 'hpricot'
 require 'fileutils'
+require 'json'
+require 'csv'
 
 class Archive
   attr_accessor :xml, :authors, :posts
@@ -20,7 +22,7 @@ end
 
 class TwitterAccount
   @@twitter_accounts = {}
-  attr_accessor :account, :collocations, :posts, :categories
+  attr_accessor :account, :collocations, :posts, :categories, :first_date, :last_date
 
   def initialize(account_name, post)
     @account = account_name
@@ -31,11 +33,14 @@ class TwitterAccount
   end
 
   def add_post(post)
-    @posts[:id] = post.title
-    @posts.twitter_accounts.each do |account|
+    @posts[post.post_id] = post.title
+    @last_date = post.publication_date
+    @first_date = post.publication_date
+    @last_date = post.publication_date
+    post.twitter_accounts.each do |account|
       add_collocation(account) unless account == @account
     end
-    @categories.each do |category|
+    post.categories.each do |category|
       add_category(category)
     end
   end
@@ -56,10 +61,34 @@ class TwitterAccount
     end
   end
 
-  def TwitterAccounts.find(account_name)
-    return @twitter_accounts[account_name] if @@twitter_accounts.has_key? account_name
+  def TwitterAccount.all
+    @@twitter_accounts
+  end
+
+  def TwitterAccount.find(account_name)
+    return @@twitter_accounts[account_name] if @@twitter_accounts.has_key? account_name
     return nil
   end
+
+  def TwitterAccount.AddTwitterAccount(account_name, post)
+    if TwitterAccount.find(account_name)
+      @@twitter_accounts[account_name].add_post(post)
+    else
+      @@twitter_accounts[account_name] = TwitterAccount.new(account_name, post)
+    end
+  end
+
+  def to_hash()
+    {:account=>@account,
+     :collocation_count=>@collocations.size,
+     :posts_count=>@posts.size,
+     :collocations=>@collocations,
+     :posts=>@posts,
+     :first_date=>@first_date,
+     :last_date=>@last_date,
+     :categories=>@categories}
+  end
+end
   
 
 class Post
@@ -72,17 +101,29 @@ class Post
     @title = (item/'title').inner_html
     @link = (item/'link').inner_html
     @content = (item/'content:encoded').text
+    @categories = []
+    (item/'category').each do |category|
+      nicename = category.attributes["nicename"]
+      @categories << nicename
+    end
     self.scan_for_twitter_accounts
     self.scan_for_twitter_hashtags
+    @twitter_accounts.each do |twitter_account|
+      TwitterAccount.AddTwitterAccount(twitter_account, self)
+    end
   end
-
+ 
   def scan_for_twitter_accounts
-    accounts = @content.scan(/twitter.com\/\#\!\/(.*?)[\/|"]/)
+    accounts = []
+    matched_accounts = @content.scan(/twitter.com\/\#\!\/(.*?)[\/|"]/)
+    matched_accounts.each do |account|
+      accounts << account[0].downcase unless( account[0].match(/\//) or account[0].match(/search/))
+    end
 
     twitter_match = @content.scan(/twitter.com\/(.*?)["]/)
     # only append things that are not false positives
     twitter_match.each do |m|
-      accounts << m unless( m[0].match(/\//) or m[0].match(/search/))
+      accounts << m[0].downcase unless( m[0].match(/\//) or m[0].match(/search/))
     end
     @twitter_accounts = accounts.uniq
   end
@@ -111,39 +152,38 @@ dirname = ARGV[0]
 
 ################
 archives = []
-Dir.glob(File.join(dirname, "**", "*.xml")).each do |filename|
-  print "."
-  archives << Archive.new(filename)
-end
+#Dir.glob(File.join(dirname, "**", "*.xml")).each do |filename|
+#  print "."
+#  archives << Archive.new(filename)
+#end
+archives << Archive.new("data/GV-English-WXR-May22/globalvoicesonline.wordpress.2011-jan-feb.xml")
 
-puts "Writing graphviz file of posts => accounts"
+puts "Creating Twitter Citation Index & Graph"
 #graphviz file with per-post collocation
-graphviz_post_graph_accounts = []
-graphviz_post_graph_posts = []
-graphviz_post_graph = ""
-graphviz_elements = ""
 
 archives.each do |archive|
   print "."
   archive.posts.each do |post|
-    graphviz_post_graph_accounts = graphviz_post_graph_accounts | post.twitter_accounts
-    post.twitter_accounts.each do |account_a|
-      graphviz_post_graph += "#{post.post_id} -> #{account_a} [style=dotted,color=blue]" + "\n"
-      post.twitter_accounts.each do |account_b|
-        if(account_a != account_b)
-          graphviz_post_graph += "#{account_a} -- #{account_b}" + "\n"
-        end
-      end
-    end
   end
 end
 
-puts "Writing json file for posts"
-all_posts = []
-archives.each do |archive|
-  print "."
-  archive.posts.each do |post|
-    all_posts << post.to_hash
+puts "Total Twitter Accounts: #{TwitterAccount.all.size}"
+twitter_account_array = []
+
+File.open("gv-viewer/data/twitter_accounts.json", "wb") do |f| 
+  TwitterAccount.all.each do |account_name, account|
+#    puts "#{account.account}: #{account.posts.size}"
+#    puts "  collocations: #{account.collocations.size}"
+#    puts "  categories: #{account.categories.size}"
+    twitter_account_array << account.to_hash
+  end
+  f.write(twitter_account_array.to_json)
+end
+
+File.open("gv-viewer/data/twitter_accounts.csv", "wb") do |f|
+  TwitterAccount.all.each do |account_name, account|
+    f.write([account.account, account.collocations.size,
+             account.posts.size, account.first_date, account.last_date,
+             ].to_csv)
   end
 end
-File.open("posts.json", "w"){|f| f.write(Categories.to_hash) }

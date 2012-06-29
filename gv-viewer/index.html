@@ -1,0 +1,56 @@
+<html>
+  <head>
+     <title>Social Mirror</title>
+     <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0;width=device-width;user-scalable=no;"></meta>
+     <link rel="stylesheet" type="text/css" href="styles/bootstrap/css/bootstrap.css"/>
+     <link rel="stylesheet" type="text/css" href="styles/main.css"/>
+     <!--<script id="splash" type="text/template" charset="utf-8" src="templates/splash.template"></script>-->
+     <script language="Javascript" type="text/javascript">
+       function launch(){
+         var gvDataView = new GVDataView;
+         $("#frame").html(gvDataView.el);
+       }
+     </script>
+  </head>
+  <body onload="launch();">
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">GV Twitter Analysis</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Contents -->
+    <div class="container" id="main_container">
+      <div id="frame">
+      </div>
+    </div>
+
+    <script type="text/javascript" charset="utf-8" src="lib/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/miso.ds.deps.min.0.2.0.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/underscore.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/backbone.js"></script>
+    <script type="text/javascript" charset="utf-8" src="app/models.js"></script>
+    <script type="text/javascript" charset="utf-8" src="app/views.js"></script>
+    <script type="text/javascript" charset="utf-8" src="app/routers.js"></script>
+    <!-- Inline Templates -->
+    <script type="text/template" id="twitter_account_rows">
+    <tr><td><%=account%></td><td><%=collocation_count%></td><td><%=posts_count%></td><td><%=last_date%></td></tr>
+    </script>
+  </body>
+</html>

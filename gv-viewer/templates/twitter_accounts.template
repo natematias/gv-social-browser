@@ -1,0 +1,18 @@
+
+<div class="hero-unit">
+  <h1>Twitter Accounts</h1>
+  <p>This is a list of all of the twitter accounts in the stuff things other things yes yes yes other things.</p>
+</div>
+
+<div class="row">
+<table id="datatable" class="table table-striped">
+  <thead>
+    <tr>
+      <th>Name</th><th>collocation #</th><th>post #</th><th>last date</th>
+    </tr>
+  </thead>
+
+</table>
+
+
+</div>

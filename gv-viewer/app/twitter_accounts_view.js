@@ -1,5 +1,5 @@
 //View ListView
-var GVDataView = Backbone.View.extend({
+var GVTwitterAccountsView = Backbone.View.extend({
      
   events: function() {
     return {

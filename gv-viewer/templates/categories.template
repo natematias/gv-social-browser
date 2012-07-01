@@ -4,9 +4,10 @@
 <!--  <p>Select a category: <select id="categories"></p>-->
   <p id="categories"></p>
    
-  <div id="category_timeseries"><svg></svg></div>
   </select></p>
 </div>
+
+<div id="category_timeseries"><svg></svg></div>
 
 <div class="row">
 <table id="datatable" class="table table-condensed table-striped">

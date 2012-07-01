@@ -6,7 +6,8 @@ var GVCategoriesView = Backbone.View.extend({
       "click #posts_date_sort": "posts_date_sort",
       "click #posts_tweet_sort": "posts_tweet_sort",
       "click .post": "view_post",
-      "click #close_post": "close_post"
+      "click #close_post": "close_post",
+      "click #select_categories": "select_categories"
     }
   },
 
@@ -27,6 +28,7 @@ var GVCategoriesView = Backbone.View.extend({
     var that = this;
     $(this.el).load("templates/categories.template", function(){
       var category_element = $('#categories');
+      category_element.hide();
       $.each(that.categories, function(category){
         category_element.append(that.category_link({category:that.categories[category]}));
       });
@@ -34,10 +36,17 @@ var GVCategoriesView = Backbone.View.extend({
     return this;
   },
 
+  select_categories: function(e){
+    selection_button=$(e.target);
+    $('#categories').show();
+  },
+
   select_category: function(e){
     var that = this;
     category_option = $(e.target); 
     category = category_option.html();
+    $('#categories').hide();
+
     jQuery.getJSON("data/categories/" + category + ".json", function(data){
       that.category_data = crossfilter(data);
       that.publication_dates = that.category_data.dimension(function(d){return d3.time.day(new Date(d.publication_date))});      

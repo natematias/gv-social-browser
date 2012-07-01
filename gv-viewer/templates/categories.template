@@ -1,7 +1,7 @@
 <div class="hero-unit">
   <h1>GV Categories</h1>
   <p>Explanation goes here.</p>
-<!--  <p>Select a category: <select id="categories"></p>-->
+  <span class="btn" id="select_categories">Select Category</span>
   <p id="categories"></p>
    
   </select></p>

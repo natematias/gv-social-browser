@@ -6,14 +6,15 @@
      <link rel="stylesheet" type="text/css" href="styles/main.css"/>
      <!--<script id="splash" type="text/template" charset="utf-8" src="templates/splash.template"></script>-->
      <script language="Javascript" type="text/javascript">
+       var gvCategoriesView = null;
+       var gvTwitterAccountsView = null;
+       var router = null;
        function launch(){
-         var gvCategoriesView = new GVCategoriesView();
-         var gvTwitterAccountsView = new GVTwitterAccountsView();
-         //var router = new GVRouter();
+         gvCategoriesView = new GVCategoriesView();
+         gvTwitterAccountsView = new GVTwitterAccountsView();
+         router = new GVRouter();
          //router.twitter_accounts();
-         //Backbone.history.start({pushState: false, root: "/medialab/socialmirror/"})
-         //$("#frame").html(gvTwitterAccountsView.el);
-         $("#frame").html(gvCategoriesView.el);
+         Backbone.history.start({pushState: false, root: "index.html"})
        }
      </script>
   </head>
@@ -49,6 +50,15 @@
     <script type="text/javascript" charset="utf-8" src="lib/jquery-1.7.2.min.js"></script>
 <!--    <script type="text/javascript" charset="utf-8" src="lib/miso.ds.deps.min.0.2.0.js"></script>-->
     <script type="text/javascript" charset="utf-8" src="lib/crossfilter.js"></script>
+
+    <!-- for visualisations -->
+    <script type="text/javascript" charset="utf-8" src="lib/d3.v2.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/nv.d3.js"></script>
+<!--    <script type="text/javascript" charset="utf-8" src="lib/stream_layers.js"></script>-->
+    <script type="text/javascript" charset="utf-8" src="lib/nvd3/models/legend.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/nvd3/models/axis.js"></script>
+    <script type="text/javascript" charset="utf-8" src="lib/nvd3/models/multiBar.js"></script>
+
     <script type="text/javascript" charset="utf-8" src="lib/underscore.js"></script>
     <script type="text/javascript" charset="utf-8" src="lib/backbone.js"></script>
     <script type="text/javascript" charset="utf-8" src="app/models.js"></script>

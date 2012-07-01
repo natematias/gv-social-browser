@@ -4,6 +4,7 @@
 <!--  <p>Select a category: <select id="categories"></p>-->
   <p id="categories"></p>
    
+  <div id="category_timeseries"><svg></svg></div>
   </select></p>
 </div>
 

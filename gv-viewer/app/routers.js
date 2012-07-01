@@ -11,6 +11,6 @@ var GVRouter = Backbone.Router.extend({
 
   categories: function(){
     $("#frame").html(gvCategoriesView.el);
-    gvCategoriesView.el.render();
+    gvCategoriesView.render();
   },
 });

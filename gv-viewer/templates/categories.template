@@ -1,6 +1,6 @@
 <div class="hero-unit">
-  <h1>GV Categories</h1>
-  <p>Explanation goes here.</p>
+  <h1 id="category_title">Posts and Twitter Citation Volume on Global Voices</h1>
+  <p>Select a GV category to view posts and Tweets over time. This graph only includes the top 200 categories from Oct 2004 to May 2012.</p>
   <span class="btn" id="select_categories">Select Category</span>
   <p id="categories"></p>
    

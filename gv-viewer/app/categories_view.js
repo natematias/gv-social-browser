@@ -15,6 +15,7 @@ var GVCategoriesView = Backbone.View.extend({
     _.bindAll(this, 'render');
     var that = this;
     this.category_link = _.template('<div class="btn btn-mini category"><%=category%></div>');
+    this.category_title = _.template('Post and Twitter Volume: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
     this.category_post = _.template($("#category_post").html());
     this.yearweek = d3.time.format("%Y%U");
@@ -38,7 +39,12 @@ var GVCategoriesView = Backbone.View.extend({
 
   select_categories: function(e){
     selection_button=$(e.target);
-    $('#categories').show();
+    categories = $('#categories');
+    if(categories.is(':visible')){
+      categories.hide();
+    }else{
+     categories.show();
+    }
   },
 
   select_category: function(e){
@@ -46,6 +52,7 @@ var GVCategoriesView = Backbone.View.extend({
     category_option = $(e.target); 
     category = category_option.html();
     $('#categories').hide();
+    $('#category_title').html( this.category_title({category:category}));
 
     jQuery.getJSON("data/categories/" + category + ".json", function(data){
       that.category_data = crossfilter(data);

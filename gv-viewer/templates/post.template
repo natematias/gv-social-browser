@@ -1,0 +1,8 @@
+<div class="container" id="post">
+  <div class="hero-unit">
+    <div class="btn" style="align:right" id="close_post">Close</div>
+    <h2><%=post.title%></h2>
+    <h3><%=new Date(Date.parse(post.publication_date)).toDateString()%> <a href="<%=post.link%>">[permalink]</a></h3>
+    <%=post.content%>
+  </div>
+</div>

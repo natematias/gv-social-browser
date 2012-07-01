@@ -1,4 +1,3 @@
-//View ListView
 var GVTwitterAccountsView = Backbone.View.extend({
      
   events: function() {
@@ -21,8 +20,6 @@ var GVTwitterAccountsView = Backbone.View.extend({
     this.twitter_accounts = null;
     this.accounts_by_posts = [];
     this.accounts_by_collocation = [];
-
-    this.render();
   },
 
   render: function(){
@@ -39,9 +36,9 @@ var GVTwitterAccountsView = Backbone.View.extend({
       that.twitter_accounts = crossfilter(data);
       that.collocated_accounts = that.twitter_accounts.dimension(function(d){return d.collocation_count});
       that.account_posts = that.twitter_accounts.dimension(function(d){return d.posts_count});
-      that.begin_date = that.twitter_accounts.dimension(function(d){return d.first_date});
-      that.end_date = that.twitter_accounts.dimension(function(d){return d.end_date});
-      that.date_range = that.twitter_accounts.dimension(function(d){return d.date_range});
+      that.begin_date = that.twitter_accounts.dimension(function(d){return new Date(Date.parse(d.first_date))});
+      that.end_date = that.twitter_accounts.dimension(function(d){return new Date(Date.parse(d.end_date))});
+      that.date_range = that.twitter_accounts.dimension(function(d){return new Date(Date.parse(d.date_range))});
       that.account_name = that.twitter_accounts.dimension(function(d){return d.account});
       that.posts_sort();
     });
@@ -52,8 +49,8 @@ var GVTwitterAccountsView = Backbone.View.extend({
     var account_button = $(e.target);
     var account_name = account_button.html();
     this.account_name.filter(account_name); //horrible kluge
-    var account = this.account_name.top(1)[0]
-    this.account_name.filter(null);
+    var account = this.account_name.top(1)[0];//any better way to select?
+    this.account_name.filter(null);//reset filter
     
     // now open the window
     $.ajax({url:"templates/twitter_account.template",

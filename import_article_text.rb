@@ -1,5 +1,6 @@
 require 'hpricot'
 require 'fileutils'
+require 'json'
 
 class Archive
   attr_accessor :xml, :authors, :posts
@@ -115,7 +116,7 @@ archives.each do |archive|
   print "."
   archive.posts.each do |post|
     File.open("gv-viewer/data/postdata/#{post.post_id}.json", "wb") do |f|
-      f.write(post.to_hash.merge({:content=>post.content}))
+      f.write(post.to_hash.merge({:content=>post.content}).to_json)
     end
   end
 end

@@ -1,16 +1,19 @@
 <html>
   <head>
-     <title>Social Mirror</title>
+     <title>GV Social Browser</title>
      <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0;width=device-width;user-scalable=no;"></meta>
      <link rel="stylesheet" type="text/css" href="styles/bootstrap/css/bootstrap.css"/>
      <link rel="stylesheet" type="text/css" href="styles/main.css"/>
      <!--<script id="splash" type="text/template" charset="utf-8" src="templates/splash.template"></script>-->
      <script language="Javascript" type="text/javascript">
        function launch(){
+         var gvCategoriesView = new GVCategoriesView();
          var gvTwitterAccountsView = new GVTwitterAccountsView();
-         var router = new GVRouter();
-         Backbone.history.start({pushState: false, root: "/medialab/socialmirror/"})
-         $("#frame").html(gvTwitterAccountsView.el);
+         //var router = new GVRouter();
+         //router.twitter_accounts();
+         //Backbone.history.start({pushState: false, root: "/medialab/socialmirror/"})
+         //$("#frame").html(gvTwitterAccountsView.el);
+         $("#frame").html(gvCategoriesView.el);
        }
      </script>
   </head>
@@ -29,7 +32,7 @@
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#twitter_accounts">Twitter Accounts</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="#categories">Categories</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -50,6 +53,7 @@
     <script type="text/javascript" charset="utf-8" src="lib/backbone.js"></script>
     <script type="text/javascript" charset="utf-8" src="app/models.js"></script>
     <script type="text/javascript" charset="utf-8" src="app/twitter_accounts_view.js"></script>
+    <script type="text/javascript" charset="utf-8" src="app/categories_view.js"></script>
     <script type="text/javascript" charset="utf-8" src="app/routers.js"></script>
     <!-- Inline Templates -->
     <script type="text/template" id="twitter_account_rows">
@@ -61,6 +65,16 @@
           <th>Name</th><th id="collocation_sort" ><span class="btn">collocation #</span></th><th id="posts_sort" ><span class="btn">post #</span></th>
         </tr>
       </thead>
+    </script>
+    <script type="text/template" id="category_post_head">
+      <thead>
+        <tr>
+          <th id="posts_date_sort"><span class="btn">Date</span></th><th>Title</th><th id="posts_tweet_sort" ><span class="btn">Twitter Acct #</span></th>
+        </tr>
+      </thead>
+    </script>
+    <script type="text/template" id="category_post">
+    <tr class="post" id="<%=post.post_id%>"><td><h6><%=new Date(Date.parse(post.publication_date)).toDateString()%></h6></td><td><%=post.title%></td><td><%=post.twitter_accounts.length%></td></tr>
     </script>
   </body>
 </html>

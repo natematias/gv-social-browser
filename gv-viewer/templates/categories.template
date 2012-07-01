@@ -1,0 +1,20 @@
+<div class="hero-unit">
+  <h1>GV Categories</h1>
+  <p>Explanation goes here.</p>
+<!--  <p>Select a category: <select id="categories"></p>-->
+  <p id="categories"></p>
+   
+  </select></p>
+</div>
+
+<div class="row">
+<table id="datatable" class="table table-condensed table-striped">
+      <thead>
+        <tr>
+          <th id="posts_date_sort"><span class="btn">Date</span></th><th>Title</th><th id="posts_tweet_sort" ><span class="btn">Twitter Acct #</span></th>
+        </tr>
+      </thead>
+</table>
+
+
+</div>

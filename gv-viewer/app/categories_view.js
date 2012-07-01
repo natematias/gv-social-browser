@@ -74,19 +74,28 @@ var GVCategoriesView = Backbone.View.extend({
   renderCategoryTimeseries: function(dimension){
     var that = this;
     nv.addGraph(function() {
-      var timeseries = nv.models.multiBarChart();
+      var post_graph = nv.models.multiBarChart();
+      var twitter_graph = nv.models.multiBarChart();
+      post_graph.height=150;
+      twitter_graph.height=150;
  
-      timeseries.xAxis.tickFormat(d3.format(',f'));
+      post_graph.xAxis.tickFormat(d3.format(',f'));
+      twitter_graph.xAxis.tickFormat(d3.format(',f'));
  
-      timeseries.yAxis.tickFormat(d3.format(',.1f'));
+      post_graph.yAxis.tickFormat(d3.format(',.1f'));
+      twitter_graph.yAxis.tickFormat(d3.format(',.1f'));
+
+      post_data = [{ key: "Posts", values: that.buildWeekData(that.publication_days)}]
+      twitter_data = [{key: "Twitter Accts", values: that.buildWeekData(that.twitter_days) }];
+     
  
-      x= that.exampleData();
-      d3.select('#category_timeseries svg').datum(x)
-       .transition().duration(500).call(timeseries);
+      d3.select('#post_timeseries svg').datum(post_data)
+       .transition().duration(500).call(post_graph);
+      d3.select('#twitter_timeseries svg').datum(twitter_data)
+       .transition().duration(500).call(twitter_graph);
  
-      nv.utils.windowResize(timeseries.update);
- 
-      return timeseries;
+      nv.utils.windowResize(post_graph.update);
+      nv.utils.windowResize(twitter_graph.update);
     });
   },
 

@@ -16,7 +16,7 @@ var GVCategoriesView = Backbone.View.extend({
     _.bindAll(this, 'render');
     var that = this;
     this.category_link = _.template('<div class="btn btn-mini category"><%=category%></div>');
-    this.twitter_account_template = _.template('<a class="btn btn-mini" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
+    this.twitter_account_template = _.template('<a class="btn btn-mini btn-info" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
     this.category_post = _.template($("#category_post").html());
@@ -67,10 +67,64 @@ var GVCategoriesView = Backbone.View.extend({
       that.post_ids = that.category_data.dimension(function(d){return d.post_id});
       that.renderCategoryPosts(that.publication_dates.top(200));
       that.renderCategoryTimeseries(that.publication_dates.top(null));
+      that.createCategoryTwitterHash(that.twitter_accounts);
     });
 
     $('.category').removeClass("btn-inverse");
     category_option.addClass("btn-inverse")
+  },
+
+  createCategoryTwitterHash: function(dimension){
+    var that = this;
+    that.category_twitter_hash= {nodes:[], links:[]};
+    
+    $.each(dimension.top(Infinity), function(key, post){
+      for(var a=0; a < post.twitter_accounts.length; a++){
+        account_a = post.twitter_accounts[a][0];
+        account_a_index = that.findNameInArray(that.category_twitter_hash.nodes, account_a);
+        if(account_a_index == -1){ // if it doesn't exist, make it
+          that.category_twitter_hash.nodes.push({name: account_a, group:1});
+          account_a_index = that.category_twitter_hash.nodes.length;
+        }
+
+        for(var b = a+1; b<post.twitter_accounts.length; b++){
+          account_b = post.twitter_accounts[b][0];
+          account_b_index = that.findNameInArray(that.category_twitter_hash.nodes, account_b);
+          if(account_b_index == -1){ // if it doesn't exist, make it
+            that.category_twitter_hash.nodes.push({name: account_b, group:1});
+            account_b_index = that.category_twitter_hash.nodes.length;
+          }
+          that.incrementLink(that.category_twitter_hash, account_a_index, account_b_index);
+        }
+        
+      }
+    });
+  },
+
+  findNameInArray: function(array, name){
+    var return_value = -1;
+    var i = 0;
+    $.each(array, function(key, value){
+      if(name==value.name){
+        return_value = i;
+        return false; //to break the loop
+      }
+    });
+    return return_value;
+  },
+
+  incrementLink: function(hash, a_index, b_index){
+    var found = false;
+    $.each(hash.links, function(index, link){
+      if( (link.source == a_index && link.target == b_index) || (link.source == b_index && link.target == a_index)){
+        link.value++;
+        found = true;
+        return false;//to break the loop
+      }
+    });
+    if(found == false){
+      hash.links.push({source: a_index, target:b_index, value:1});
+    }
   },
 
   renderCategoryTimeseries: function(dimension){
@@ -187,9 +241,60 @@ var GVCategoriesView = Backbone.View.extend({
                 $(that.el).append(post_template({post:post_data}));
                 $('#post_twitter_accounts').after(twitter_accounts_html);
                 $('#post_content').hide()
+                that.renderSocialGraph();
               }
             });
       });
+  },
+
+  renderSocialGraph: function(){
+    var width = 960,
+        height = 500;
+
+    var color = d3.scale.category20();
+
+    var force = d3.layout.force()
+        .charge(-120)
+        .linkDistance(30)
+        .size([width, height]);
+
+    var svg = d3.select("#post_twitter_graph").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    d3.json("data/miserables.json", function(json) {
+      force
+          .nodes(json.nodes)
+          .links(json.links)
+          .start();
+
+      var link = svg.selectAll("line.link")
+          .data(json.links)
+          .enter().append("line")
+          .attr("class", "link")
+          .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+      var node = svg.selectAll("circle.node")
+          .data(json.nodes)
+          .enter().append("circle")
+          .attr("class", "node")
+          .attr("r", 5)
+          .style("fill", function(d) { return color(d.group); })
+          .call(force.drag);
+
+      node.append("title")
+          .text(function(d) { return d.name; });
+
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; });
+      });
+    });
   },
   
   toggle_post: function(e){

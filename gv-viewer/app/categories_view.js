@@ -16,6 +16,7 @@ var GVCategoriesView = Backbone.View.extend({
     _.bindAll(this, 'render');
     var that = this;
     this.category_link = _.template('<div class="btn btn-mini category"><%=category%></div>');
+    this.twitter_account_template = _.template('<a class="btn btn-mini" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
     this.category_post = _.template($("#category_post").html());
@@ -169,6 +170,12 @@ var GVCategoriesView = Backbone.View.extend({
     this.post_ids.filter(post_id);// horrible kluge
     var post = this.post_ids.top(1)[0];//any better way to select?
     this.post_ids.filter(null); // reset filter
+
+    var twitter_accounts_html = "";
+    $.each(post.twitter_accounts, function(key, account){
+      // first array item due to a bug in the code
+      twitter_accounts_html += that.twitter_account_template({account:account[0]});
+    });
     
     jQuery.getJSON("data/postdata/" + post_id + ".json", function(data){
       var post_data = data;// probably unnecessary
@@ -178,6 +185,7 @@ var GVCategoriesView = Backbone.View.extend({
               success: function(data){
                 post_template = _.template(data);
                 $(that.el).append(post_template({post:post_data}));
+                $('#post_twitter_accounts').after(twitter_accounts_html);
                 $('#post_content').hide()
               }
             });

@@ -4,6 +4,8 @@
     <div class="btn" style="align:right" id="toggle_post">Content</div>
       <h2><%=post.title%></h2>
       <h3><%=new Date(Date.parse(post.publication_date)).toDateString()%> <a href="<%=post.link%>">[permalink]</a></h3>
+    <h4>Twitter Accounts:</h4>
+    <div id="post_twitter_accounts"></div>
     <div id="post_content">
       <%=post.content%>
     </div>

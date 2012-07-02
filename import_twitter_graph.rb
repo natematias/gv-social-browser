@@ -1,7 +1,6 @@
 require 'hpricot'
 require 'fileutils'
 require 'json'
-require 'csv'
 
 class Archive
   attr_accessor :xml, :authors, :posts
@@ -87,8 +86,39 @@ class TwitterAccount
      :posts=>@posts,
      :first_date=>@first_date,
      :last_date=>@last_date,
-     :dates=>@all_dates,
      :categories=>@categories}
+  end
+end
+
+
+class Categories
+  @@categories = {}
+  def Categories.get_categories
+    @@categories
+  end
+  def Categories.add_post post
+    begin
+    (post.item/'category').each do |category|
+      nicename = category.attributes["nicename"]
+      if !(@@categories.has_key? nicename)
+        @@categories[nicename] = []
+      end
+      @@categories[nicename] << post
+      #puts "adding #{post.title} to #{nicename}"
+    end
+    rescue
+    end
+  end
+
+  def Categories.to_hash
+    all_categories = {}
+    @@categories.each do |category|
+      all_categories[category] = []
+      category.posts.each do |post|
+        all_categories[category] << post.to_hash
+      end
+    end
+    all_categories
   end
 end
   
@@ -110,6 +140,7 @@ class Post
     end
     self.scan_for_twitter_accounts
     self.scan_for_twitter_hashtags
+    #Categories.add_post(self)
     @twitter_accounts.each do |twitter_account|
       TwitterAccount.AddTwitterAccount(twitter_account, self)
     end
@@ -154,10 +185,10 @@ dirname = ARGV[0]
 
 ################
 archives = []
-#Dir.glob(File.join(dirname, "**", "*.xml")).each do |filename|
-#  print "."
-#  archives << Archive.new(filename)
-#end
+Dir.glob(File.join(dirname, "**", "*.xml")).each do |filename|
+  print "."
+  archives << Archive.new(filename)
+end
 archives << Archive.new("data/GV-English-WXR-May22/globalvoicesonline.wordpress.2011-jan-feb.xml")
 
 puts "Creating Twitter Citation Index & Graph"
@@ -182,10 +213,7 @@ File.open("gv-viewer/data/twitter_accounts.json", "wb") do |f|
   f.write(twitter_account_array.to_json)
 end
 
-File.open("gv-viewer/data/twitter_accounts.csv", "wb") do |f|
-  TwitterAccount.all.each do |account_name, account|
-    f.write([account.account, account.collocations.size,
-             account.posts.size, account.first_date, account.last_date,
-             ].to_csv)
-  end
-end
+#Categories.get_categories.each do |category|
+#  File.open(File.join("results/category_twitter_json/", "#{category}_twitter.json") do |f|
+#  end
+#end

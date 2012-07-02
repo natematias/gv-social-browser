@@ -7,6 +7,7 @@ var GVCategoriesView = Backbone.View.extend({
       "click #posts_tweet_sort": "posts_tweet_sort",
       "click .post": "view_post",
       "click #close_post": "close_post",
+      "click #toggle_post": "toggle_post",
       "click #select_categories": "select_categories"
     }
   },
@@ -177,9 +178,19 @@ var GVCategoriesView = Backbone.View.extend({
               success: function(data){
                 post_template = _.template(data);
                 $(that.el).append(post_template({post:post_data}));
+                $('#post_content').hide()
               }
             });
       });
+  },
+  
+  toggle_post: function(e){
+    post = $("#post_content");
+    if(post.is(":visible")){
+      post.hide();
+    }else{
+      post.show();
+    }
   },
  
   close_post: function(e){

@@ -7,7 +7,8 @@
   </select></p>
 </div>
 
-<div id="category_timeseries"><svg></svg></div>
+<div id="post_timeseries" style="height:200px;"><svg style="height:200px;"></svg></div>
+<div id="twitter_timeseries" style="height:200px;"><svg style="height:200px;"></svg></div>
 
 <div class="row">
 <table id="datatable" class="table table-condensed table-striped">

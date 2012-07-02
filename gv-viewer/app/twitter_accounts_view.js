@@ -17,6 +17,8 @@ var GVTwitterAccountsView = Backbone.View.extend({
     _.bindAll(this, 'render');
     this.twitter_account_row = _.template($("#twitter_account_rows").html());
     this.twitter_account_head = _.template($("#twitter_account_head").html());
+    this.twitter_link_template = _.template('<a class="btn btn-mini btn-info" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
+    this.post_link_template = _.template('<div><a href="<%=post.link%>"><%=post.title%></a></div>')
     this.twitter_accounts = null;
     this.accounts_by_posts = [];
     this.accounts_by_collocation = [];
@@ -51,6 +53,7 @@ var GVTwitterAccountsView = Backbone.View.extend({
     this.account_name.filter(account_name); //horrible kluge
     var account = this.account_name.top(1)[0];//any better way to select?
     this.account_name.filter(null);//reset filter
+    var twitter_accounts_html = "";
     
     // now open the window
     $.ajax({url:"templates/twitter_account.template",
@@ -59,6 +62,18 @@ var GVTwitterAccountsView = Backbone.View.extend({
                 success: function(data){
                   twitter_account_template = _.template(data);
                   $(that.el).append(twitter_account_template(account));
+ 
+                  //now show twitter collocations
+                  $.each(account.collocations, function(account, weight){
+                    twitter_accounts_html += that.twitter_link_template({account:account});
+                  });
+                  $('#twitter_collocations').append(twitter_accounts_html);
+                  $.each(account.posts, function(post_id, title){
+                    //now show the post links
+                    jQuery.getJSON("data/postdata/" + post_id + ".json", function(data){
+                      $('#post_links').append(that.post_link_template({post:data}));
+                    });
+                  });
                 }
       });
   },
@@ -68,11 +83,11 @@ var GVTwitterAccountsView = Backbone.View.extend({
   },
 
   collocation_sort: function(){
-    this.renderTwitterData(this.collocated_accounts.top(200));
+    this.renderTwitterData(this.collocated_accounts.top(400));
   },
   
   posts_sort: function(){
-    this.renderTwitterData(this.account_posts.top(200));
+    this.renderTwitterData(this.account_posts.top(400));
   },
 
   renderTwitterData: function(dimension){

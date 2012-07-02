@@ -173,7 +173,7 @@ var GVCategoriesView = Backbone.View.extend({
 
     var twitter_accounts_html = "";
     $.each(post.twitter_accounts, function(key, account){
-      // first array item due to a bug in the code
+      // first array item due to a bug in the data production code
       twitter_accounts_html += that.twitter_account_template({account:account[0]});
     });
     

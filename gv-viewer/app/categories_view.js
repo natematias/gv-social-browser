@@ -68,6 +68,7 @@ var GVCategoriesView = Backbone.View.extend({
       that.renderCategoryPosts(that.publication_dates.top(200));
       that.renderCategoryTimeseries(that.publication_dates.top(null));
       that.createCategoryTwitterHash(that.twitter_accounts);
+      that.renderSocialGraph();
     });
 
     $('.category').removeClass("btn-inverse");
@@ -241,7 +242,6 @@ var GVCategoriesView = Backbone.View.extend({
                 $(that.el).append(post_template({post:post_data}));
                 $('#post_twitter_accounts').after(twitter_accounts_html);
                 $('#post_content').hide()
-                that.renderSocialGraph();
               }
             });
       });
@@ -258,7 +258,7 @@ var GVCategoriesView = Backbone.View.extend({
         .linkDistance(30)
         .size([width, height]);
 
-    var svg = d3.select("#post_twitter_graph").append("svg")
+    var svg = d3.select("#twitter_graph").append("svg")
         .attr("width", width)
         .attr("height", height);
 

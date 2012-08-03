@@ -135,15 +135,20 @@ var GVCategoriesView = Backbone.View.extend({
       var twitter_graph = nv.models.multiBarChart();
       post_graph.height=150;
       twitter_graph.height=150;
+
+      post_data = [{ key: "Posts", values: that.buildWeekData(that.publication_days)}]
+      twitter_data = [{key: "Twitter Accts", values: that.buildWeekData(that.twitter_days) }];
  
-      post_graph.xAxis.tickFormat(d3.format(',f'));
+      //post_graph.xAxis.tickFormat(d3.format(',f'));
+      post_graph.xAxis.tickFormat(function(d){
+        //console.log(d);
+        return d;//post_data[0].values[d].week.substring(0,4);
+      });
       twitter_graph.xAxis.tickFormat(d3.format(',f'));
  
       post_graph.yAxis.tickFormat(d3.format(',.1f'));
       twitter_graph.yAxis.tickFormat(d3.format(',.1f'));
 
-      post_data = [{ key: "Posts", values: that.buildWeekData(that.publication_days)}]
-      twitter_data = [{key: "Twitter Accts", values: that.buildWeekData(that.twitter_days) }];
      
  
       d3.select('#post_timeseries svg').datum(post_data)
@@ -160,7 +165,11 @@ var GVCategoriesView = Backbone.View.extend({
   buildWeekData:function(data_group){
     var that = this;
     this.earliest_week = this.publication_dates.group().all()[0].key;
+    // WED 27 Oct 2004 was the date of the very first GV post
+    //this.earliest_week = new Date('Wed, 27 Oct 2004');
     this.last_week = new Date(that.publication_dates.top(1)[0].publication_date);
+    // the 22nd of May is the last date in the dataset from Jer
+    //this.last_week = new Date("Tue, 22 May 2012");
     var getWeek = d3.time.format("%U");
     graphdata = new Array();
     var start_year = this.earliest_week.getFullYear();
@@ -174,7 +183,7 @@ var GVCategoriesView = Backbone.View.extend({
       for(week = start_week; true; week++){
         full_week = year.toString() + ("0" + week).slice (-2); //week.toString();
         if(current_week!=null && full_week == current_week.key){
-          graphdata.push({x:incrementor, y:current_week.value});
+          graphdata.push({x:incrementor, y:current_week.value, week:full_week});
           current_week_record++;
           current_week = data_group.all()[current_week_record];
           if(current_week_record >= data_group.all().length){
@@ -184,11 +193,11 @@ var GVCategoriesView = Backbone.View.extend({
         }else{
           graphdata.push({x:incrementor, y:0});
         }
+        incrementor ++;
         if(week >= 52){
           start_week=0;
           break;
         }
-        incrementor ++;
       }
       if(current_week==null){
         break;

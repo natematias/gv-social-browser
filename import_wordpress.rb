@@ -111,29 +111,29 @@ graphviz_post_graph_posts = []
 graphviz_post_graph = ""
 graphviz_elements = ""
 
-archives.each do |archive|
-  print "."
-  archive.posts.each do |post|
-    graphviz_post_graph_accounts = graphviz_post_graph_accounts | post.twitter_accounts
-    post.twitter_accounts.each do |account_a|
-      graphviz_post_graph += "#{post.post_id} -> #{account_a} [style=dotted,color=blue]" + "\n"
-      post.twitter_accounts.each do |account_b|
-        if(account_a != account_b)
-          graphviz_post_graph += "#{account_a} -- #{account_b}" + "\n"
-        end
-      end
-    end
-  end
-end
+#archives.each do |archive|
+#  print "."
+#  archive.posts.each do |post|
+#    graphviz_post_graph_accounts = graphviz_post_graph_accounts | post.twitter_accounts
+#    post.twitter_accounts.each do |account_a|
+#      graphviz_post_graph += "#{post.post_id} -> #{account_a} [style=dotted,color=blue]" + "\n"
+#      post.twitter_accounts.each do |account_b|
+#        if(account_a != account_b)
+#          graphviz_post_graph += "#{account_a} -- #{account_b}" + "\n"
+#        end
+#      end
+#    end
+#  end
+#end
 
-graphviz_post_graph_elements.each do |account|
-  graphviz_elements += "#{account} [color=blue]" + "\n"
-end
-
-File.open("graphviz_posts.gv", 'w') {|f| f.write(graphviz_elements + graphviz_post_graph) }
-
-puts "Writing json file for categories"
-File.open("categories.json", "w"){|f| f.write(Categories.to_hash) }
+#graphviz_post_graph_elements.each do |account|
+#  graphviz_elements += "#{account} [color=blue]" + "\n"
+#end
+#
+#File.open("results/graphviz_posts.gv", 'w') {|f| f.write(graphviz_elements + graphviz_post_graph) }
+#
+#puts "Writing json file for categories"
+#File.open("results/categories.json", "w"){|f| f.write(Categories.to_hash) }
 
 puts "Writing json file for posts"
 all_posts = []
@@ -143,4 +143,4 @@ archives.each do |archive|
     all_posts << post.to_hash
   end
 end
-File.open("posts.json", "w"){|f| f.write(Categories.to_hash) }
+File.open("results/posts.json", "w"){|f| f.write(all_posts) }

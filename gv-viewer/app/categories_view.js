@@ -8,7 +8,8 @@ var GVCategoriesView = Backbone.View.extend({
       "click .post": "view_post",
       "click #close_post": "close_post",
       "click #toggle_post": "toggle_post",
-      "click #select_categories": "select_categories"
+      "click #select_categories": "select_categories",
+      "click #render_social_graph": "renderSocialGraph"
     }
   },
 
@@ -67,8 +68,6 @@ var GVCategoriesView = Backbone.View.extend({
       that.post_ids = that.category_data.dimension(function(d){return d.post_id});
       that.renderCategoryPosts(that.publication_dates.top(200));
       that.renderCategoryTimeseries(that.publication_dates.top(null));
-      that.createCategoryTwitterHash(that.twitter_accounts);
-      that.renderSocialGraph();
     });
 
     $('.category').removeClass("btn-inverse");
@@ -110,6 +109,7 @@ var GVCategoriesView = Backbone.View.extend({
         return_value = i;
         return false; //to break the loop
       }
+      i++;
     });
     return return_value;
   },
@@ -248,37 +248,40 @@ var GVCategoriesView = Backbone.View.extend({
   },
 
   renderSocialGraph: function(){
+    this.createCategoryTwitterHash(this.twitter_accounts);
+    $("#twitter_graph svg").remove();
+    var that= this;
     var width = 960,
-        height = 500;
+        height = 960;
 
     var color = d3.scale.category20();
 
     var force = d3.layout.force()
         .charge(-120)
-        .linkDistance(30)
+        .linkDistance(5)
         .size([width, height]);
 
     var svg = d3.select("#twitter_graph").append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    d3.json("data/miserables.json", function(json) {
+    /*d3.json("data/miserables.json", function(json) {*/
       force
-          .nodes(json.nodes)
-          .links(json.links)
+          .nodes(that.category_twitter_hash.nodes)
+          .links(that.category_twitter_hash.links)
           .start();
 
       var link = svg.selectAll("line.link")
-          .data(json.links)
+          .data(that.category_twitter_hash.links)
           .enter().append("line")
           .attr("class", "link")
           .style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
       var node = svg.selectAll("circle.node")
-          .data(json.nodes)
+          .data(that.category_twitter_hash.nodes)
           .enter().append("circle")
           .attr("class", "node")
-          .attr("r", 5)
+          .attr("r", 4)
           .style("fill", function(d) { return color(d.group); })
           .call(force.drag);
 
@@ -294,7 +297,7 @@ var GVCategoriesView = Backbone.View.extend({
         node.attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; });
       });
-    });
+    //});
   },
   
   toggle_post: function(e){

@@ -21,13 +21,14 @@ end
 
 class TwitterAccount
   @@twitter_accounts = {}
-  attr_accessor :account, :collocations, :posts, :categories, :first_date, :last_date, :all_dates
+  attr_accessor :account, :collocations, :posts, :categories, :first_date, :last_date, :all_dates, :category_collocations
 
   def initialize(account_name, post)
     @account = account_name
     @posts = {}
     @collocations = {}
     @categories = {}
+    @category_collocations = {}
     @all_dates = []
     @first_date = post.publication_date
     add_post(post)
@@ -43,6 +44,9 @@ class TwitterAccount
     post.categories.each do |category|
       add_category(category)
     end
+
+    add_category_collocations(post.categories, post.twitter_accounts)
+    
   end
   
   def add_collocation(account_name)
@@ -58,6 +62,19 @@ class TwitterAccount
       @categories[category] += 1
     else
       @categories[category] = 1
+    end
+  end
+
+  def add_category_collocations(categories, twitter_accounts)
+    categories.each do |category|
+      @category_collocations[category] = {} if(!@category_collocations.has_key? category)
+      twitter_accounts.each do |account|
+        if !@category_collocations[category].has_key? account
+          @category_collocations[category][account] = 1 
+        else
+          @category_collocations[category][account] += 1
+        end
+      end
     end
   end
 
@@ -145,19 +162,33 @@ class Post
       TwitterAccount.AddTwitterAccount(twitter_account, self)
     end
   end
+
+  def account_is_invalid account
+    return (account[0].match(/\//) or account[0].match(/search/) or account[0].match(/\?|\+|&/) or account[0].match(/favicon/) or account[0].strip =="" or account[0].match(/gmail/) or account[0].match(/gmail/) or account[0] =="s" or account[0].downcase == "n00")
+  end
  
   def scan_for_twitter_accounts
     accounts = []
+
+    #match links which include #!
     matched_accounts = @content.scan(/twitter.com\/\#\!\/(.*?)[\/|"|\?]/)
     matched_accounts.each do |account|
-      accounts << account[0].downcase unless( account[0].match(/\//) or account[0].match(/search/) or account[0].match(/\?/) or account[0].match(/favicon/) or account[0].strip =="")
+      accounts << account[0].downcase unless account_is_invalid(account)
     end
 
+    #match links which don't include #!
     twitter_match = @content.scan(/twitter.com\/(.*?)["|\?]/)
-    # only append things that are not false positives
-    twitter_match.each do |m|
-      accounts << m[0].downcase unless( m[0].match(/\//) or m[0].match(/search/) or m[0].match(/\?/) or m[0].match(/favicon/) or m[0].strip=="")
+    twitter_match.each do |account|
+      accounts << account[0].downcase unless account_is_invalid(account)
     end
+    
+    #match accounts cited without links
+    cited_accounts = @content.scan(/@(.*?)[\W]/)
+    cited_accounts.each do |account|
+      accounts << account[0].downcase unless account_is_invalid(account)
+    end
+    
+    
     @twitter_accounts = accounts.uniq
   end
 
@@ -189,16 +220,7 @@ Dir.glob(File.join(dirname, "**", "*.xml")).each do |filename|
   print "."
   archives << Archive.new(filename)
 end
-archives << Archive.new("data/GV-English-WXR-May22/globalvoicesonline.wordpress.2011-jan-feb.xml")
-
-puts "Creating Twitter Citation Index & Graph"
-#graphviz file with per-post collocation
-
-archives.each do |archive|
-  print "."
-  archive.posts.each do |post|
-  end
-end
+#archives << Archive.new("data/GV-English-WXR-May22/globalvoicesonline.wordpress.2011-jan-feb.xml")
 
 puts "Total Twitter Accounts: #{TwitterAccount.all.size}"
 twitter_account_array = []
@@ -213,7 +235,19 @@ File.open("gv-viewer/data/twitter_accounts.json", "wb") do |f|
   f.write(twitter_account_array.to_json)
 end
 
-#Categories.get_categories.each do |category|
-#  File.open(File.join("results/category_twitter_json/", "#{category}_twitter.json") do |f|
-#  end
-#end
+#File.open("results/categories/
+puts "Constructing hash of per-category twitter citation"
+category_accounts = {}
+TwitterAccount.all.each do |key, account|
+  account.categories.each do |category, value|
+    category_accounts[category] = [] if(!category_accounts.has_key? category)
+    category_accounts[category] << account.to_hash.merge(:posts_count=>value, :collocations=>account.category_collocations[category])
+  end
+end
+
+category_accounts.each do |category, data|
+  File.open("gv-viewer/data/categories/#{category}_twitter.json", "wb"){|f|
+    print "."
+    f.write(data.to_json)
+  }
+end

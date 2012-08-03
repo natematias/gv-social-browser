@@ -16,7 +16,7 @@ var GVCategoriesView = Backbone.View.extend({
   initialize: function(){
     _.bindAll(this, 'render');
     var that = this;
-    this.category_link = _.template('<div class="btn btn-mini category"><%=category%></div>');
+    this.category_link = _.template('<div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div>');
     this.twitter_account_template = _.template('<a class="btn btn-mini btn-info" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
@@ -25,10 +25,10 @@ var GVCategoriesView = Backbone.View.extend({
     jQuery.getJSON("data/categories.json", function(data){
       that.categories = data;
     });
-    this.render();
+    //this.render();
   },
 
-  render: function(){
+  render: function(category){
     var that = this;
     $(this.el).load("templates/categories.template", function(){
       var category_element = $('#categories');
@@ -37,6 +37,10 @@ var GVCategoriesView = Backbone.View.extend({
         category_element.append(that.category_link({category:that.categories[category]}));
       });
     });
+    if(category!=null){
+     btn = $('#' + category + "btn");
+     this.select_category({"target":btn[0]});
+    }
     return this;
   },
 
@@ -164,12 +168,12 @@ var GVCategoriesView = Backbone.View.extend({
   // this is going to be ugly
   buildWeekData:function(data_group){
     var that = this;
-    this.earliest_week = this.publication_dates.group().all()[0].key;
+    //this.earliest_week = this.publication_dates.group().all()[0].key;
     // WED 27 Oct 2004 was the date of the very first GV post
-    //this.earliest_week = new Date('Wed, 27 Oct 2004');
-    this.last_week = new Date(that.publication_dates.top(1)[0].publication_date);
+    this.earliest_week = new Date('Wed, 27 Oct 2004');
+    //this.last_week = new Date(that.publication_dates.top(1)[0].publication_date);
     // the 22nd of May is the last date in the dataset from Jer
-    //this.last_week = new Date("Tue, 22 May 2012");
+    this.last_week = new Date("31 July 2012");
     var getWeek = d3.time.format("%U");
     graphdata = new Array();
     var start_year = this.earliest_week.getFullYear();

@@ -1,7 +1,8 @@
 var GVRouter = Backbone.Router.extend({
   routes: {
     "twitter_accounts": "twitter_accounts",
-    "categories": "categories"
+    "categories/:category": "categories"//,
+//    "categories": "nocategory"
   },
   
   twitter_accounts: function(){
@@ -9,8 +10,12 @@ var GVRouter = Backbone.Router.extend({
     gvTwitterAccountsView.render();
   },
 
-  categories: function(){
+  nocategory: function(){
+    this.categories(null);
+  },
+
+  categories: function(category){
     $("#frame").html(gvCategoriesView.el);
-    gvCategoriesView.render();
+    gvCategoriesView.render(category);
   },
 });

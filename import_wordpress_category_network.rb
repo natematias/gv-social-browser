@@ -192,11 +192,16 @@ puts "Creating json files for categories"
 #File.open("results/categories.json", "w"){|f|
 #  f.write("[")
   Categories.get_categories.each do |name, category|
-    print "."
+    count = category.size
+    if category.size <=40
+      puts name
+      next
+    end
+    #print "."
     $stdout.flush
     File.open("results/#{name}.json", "w"){|c|
       c.write "["
-      count = category.size
+      puts "#{name}, #{category.size}"
       category.each do |post|
         count -= 1
         line_end = ","

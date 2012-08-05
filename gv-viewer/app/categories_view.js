@@ -4,6 +4,8 @@ var GVCategoriesView = Backbone.View.extend({
     return {
       "click #twitter_collocation_sort": "twitter_collocation_sort",
       "click #twitter_posts_sort": "twitter_posts_sort",
+      "click #twitter_cat_collocation_sort": "twitter_cat_collocation_sort",
+      "click #twitter_cat_posts_sort": "twitter_cat_posts_sort",
       "click #posts_date_sort": "posts_date_sort",
       "click #posts_tweet_sort": "posts_tweet_sort",
       "click .post": "view_post",
@@ -104,6 +106,8 @@ var GVCategoriesView = Backbone.View.extend({
       that.twitter_data = crossfilter(data);
       that.twitter_posts = that.twitter_data.dimension(function(d){return d.posts_count});      
       that.twitter_collocations = that.twitter_data.dimension(function(d){return d.collocation_count});
+      that.twitter_cat_collocations = that.twitter_data.dimension(function(d){return _.size(d.category_collocations)});
+      that.twitter_cat_posts = that.twitter_data.dimension(function(d){return d.category_posts_count});
       that.account_name = that.twitter_data.dimension(function(d){return d.account});
       that.twitter_posts_sort();
       console.log(1);
@@ -156,6 +160,14 @@ var GVCategoriesView = Backbone.View.extend({
 
   twitter_collocation_sort: function(){
    this.render_twitter_table(this.twitter_collocations.top(400))
+  },
+
+  twitter_cat_collocation_sort: function(){
+   this.render_twitter_table(this.twitter_cat_collocations.top(400))
+  },
+
+  twitter_cat_posts_sort: function(){
+   this.render_twitter_table(this.twitter_cat_posts.top(400))
   },
 
   close_twitter_account: function(e){

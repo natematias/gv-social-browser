@@ -33,3 +33,7 @@ a.label{
 .twitter_account_template{
   display:inline-block;
 }
+
+.post_title{
+  font-size:80%;
+}

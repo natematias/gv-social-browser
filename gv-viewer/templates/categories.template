@@ -12,7 +12,7 @@
 <div id="twitter_graph"></div>
 
 <div class="row">
-<div class="span9">
+<div class="span7">
 <table id="post_table" class="table table-condensed table-striped">
       <thead>
 <!--        <tr><th span="3"><h3>Posts</h3></th></tr>
@@ -22,7 +22,7 @@
       </thead>
 </table>
 </div>
-<div class="span3">
+<div class="span5">
   <table id="twitter_table" class="table table-condensed table-striped">
     <thead>
 <!--      <tr><th span="3"><h3>Twitter Accounts</h3></th></tr>

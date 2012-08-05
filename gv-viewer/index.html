@@ -38,13 +38,16 @@
 
     <!-- Inline Templates -->
     <script type="text/template" id="twitter_account_rows">
-    <tr><td><%=collocation_count%></td><td><%=posts_count%></td><td><span class="label label-inverse twitter_account"><%=account%></span></td></tr>
+    <tr>
+        <td><%=_.size(category_collocations)%></td><td><%=category_posts_count%></td>
+        <td><%=collocation_count%></td><td><%=posts_count%></td>
+        <td><span class="label label-inverse twitter_account"><%=account%></span></td></tr>
     </script>
     <script type="text/template" id="twitter_account_head">
       <thead>
-        <tr><th colspan="3"><h3>Twitter Accounts</h3></th></tr>
+        <tr><th colspan="7"><h3>Twitter Accounts</h3></th></tr>
         <tr>
-  <th id="twitter_collocation_sort" ><span class="btn">collocation</span></th><th id="twitter_posts_sort" ><span class="btn">posts</span></th><th>account name</th>
+  <th ><span class="btn btn-mini">c coll</span></th><th><span class="btn btn-mini">c posts</span></th><!--<th><span class="btn btn-mini">c_avg coll</span></th>--><th id="twitter_collocation_sort" ><span class="btn btn-mini">all coll</span></th><th id="twitter_posts_sort" ><span class="btn btn-mini">all posts</span></th><!--<th><span class="btn btn-mini">all_avg coll</span></th>--><th>account</th>
         </tr>
       </thead>
     </script>

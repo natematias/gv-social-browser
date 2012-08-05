@@ -164,7 +164,7 @@ class Post
   end
 
   def account_is_invalid account
-    return (account[0].match(/\//) or account[0].match(/search/) or account[0].match(/\?|\+|&/) or account[0].match(/favicon/) or account[0].strip =="" or account[0].match(/gmail/) or account[0].match(/gmail/) or account[0] =="s" or account[0].downcase == "n00")
+    return (account[0].match(/\//) or account[0].match(/search/) or account[0].match(/\?|\+|&/) or account[0].match(/favicon/) or account[0].strip =="" or account[0].match(/gmail/) or account[0].match(/gmail/) or account[0] =="s" or account[0].match(/hotmail/) or account[0][0..3].downcase.match(/n0/))
   end
  
   def scan_for_twitter_accounts
@@ -241,12 +241,12 @@ category_accounts = {}
 TwitterAccount.all.each do |key, account|
   account.categories.each do |category, value|
     category_accounts[category] = [] if(!category_accounts.has_key? category)
-    category_accounts[category] << account.to_hash.merge(:posts_count=>value, :collocations=>account.category_collocations[category])
+    category_accounts[category] << account.to_hash.merge(:category_posts_count=>value, :category_collocations=>account.category_collocations[category])
   end
 end
 
 category_accounts.each do |category, data|
-  File.open("gv-viewer/data/categories/#{category}_twitter.json", "wb"){|f|
+  File.open("gv-viewer/data/twitter/#{category}_twitter.json", "wb"){|f|
     print "."
     f.write(data.to_json)
   }

@@ -4,9 +4,10 @@
       <table id="twitter_account_table" class="table table-condensed">
         <tr><td><strong>First Date</strong></td><td><%=first_date%></td></tr>
         <tr><td><strong>Last Date</strong></td><td><%=last_date%></td></tr>
-        <tr><td><strong>Posts</strong></td><td id="post_links">
+        <tr><td><strong>All Posts</strong></td><td id="post_links">
 </td></tr>
-        <tr><td><strong>Collocations</strong></td><td id="twitter_collocations">
+        <tr><td><strong><%=category%> Collocations</strong></td><td id="category_twitter_collocations">
+        <tr><td><strong>All Collocations</strong></td><td id="all_twitter_collocations">
 </td></tr>
       </table>
       <div class="btn" id="close_twitter_account">Close</div>

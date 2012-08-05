@@ -22,7 +22,7 @@ var GVCategoriesView = Backbone.View.extend({
     var that = this;
 
     this.category_link = _.template('<a href="#/categories/<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
-    this.twitter_account_template = _.template('<a class="label label-inverse twitter_account_template" href="http://twitter.com/#!/<%=account%>"><%=account%></a>');
+    this.twitter_account_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="http://twitter.com/#!/<%=account%>"><%=account%></a>');
     this.twitter_account_row = _.template($("#twitter_account_rows").html());
     this.twitter_account_head = _.template($("#twitter_account_head").html());
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
@@ -84,7 +84,7 @@ var GVCategoriesView = Backbone.View.extend({
   select_category: function(e){
     var that = this;
     category_option = $(e.target); 
-    category = category_option.html();
+    this.category = category = category_option.html();
     $('#category_title').html( this.category_title({category:category}));
 
     // load category posts
@@ -136,13 +136,23 @@ var GVCategoriesView = Backbone.View.extend({
                 dataType: "text",
                 success: function(data){
                   twitter_account_template = _.template(data);
+                  account.category = that.category;// add category to template object
                   $(that.el).append(twitter_account_template(account));
 
-                  //now show twitter collocations
+                  //now show all twitter collocations
                   $.each(account.collocations, function(account, weight){
-                    twitter_accounts_html += that.twitter_account_template({account:account});
+                    twitter_accounts_html += that.twitter_account_template({account:account, labeltype:""});
                   });
-                  $('#twitter_collocations').append(twitter_accounts_html);
+                  $('#all_twitter_collocations').append(twitter_accounts_html);
+                  twitter_accounts_html ="";
+
+                  //show category twitter collocations
+                  $.each(account.category_collocations, function(account, weight){
+                    twitter_accounts_html += that.twitter_account_template({account:account, labeltype:"label-inverse"});
+                  });
+                  $('#category_twitter_collocations').append(twitter_accounts_html);
+
+
                   window.scrollTo(0,80);
                   $.each(account.posts, function(post_id, title){
                     //now show the post links

@@ -8,8 +8,7 @@ var GVCategoriesView = Backbone.View.extend({
       "click .post": "view_post",
       "click #close_post": "close_post",
       "click #toggle_post": "toggle_post",
-      "click #select_categories": "select_categories",
-      "click #render_social_graph": "renderSocialGraph"
+      "click #select_categories": "select_categories"
     }
   },
 
@@ -25,21 +24,34 @@ var GVCategoriesView = Backbone.View.extend({
     jQuery.getJSON("data/categories.json", function(data){
       that.categories = data;
     });
-    //this.render();
+    this.render(null);
   },
 
   render: function(category){
     var that = this;
-    $(this.el).load("templates/categories.template", function(){
-      var category_element = $('#categories');
-      category_element.hide();
-      $.each(that.categories, function(category){
-        category_element.append(that.category_link({category:that.categories[category]}));
+    if($('#category_title').size()==0){
+      $(this.el).load("templates/categories.template", function(){
+        var category_element = $('#categories');
+        if(category_element.is(':visible')){
+          category_element.hide();
+        }
+        $.each(that.categories, function(category){
+          category_element.append(that.category_link({category:that.categories[category]}));
+        });
+        if(category!=null){
+          btn = $('#' + category + "btn");
+          that.select_category({"target":btn[0]});
+        }
       });
-    });
-    if(category!=null){
-     btn = $('#' + category + "btn");
-     this.select_category({"target":btn[0]});
+    }else{
+      var category_element = $('#categories');
+      if(category_element.is(':visible')){
+        category_element.hide();
+      }
+      if(category!=null){
+        btn = $('#' + category + "btn");
+        that.select_category({"target":btn[0]});
+      }
     }
     return this;
   },

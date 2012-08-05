@@ -23,6 +23,7 @@ var GVCategoriesView = Backbone.View.extend({
 
     this.category_link = _.template('<a href="#/categories/<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
     this.twitter_account_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="http://twitter.com/#!/<%=account%>"><%=account%></a>');
+    this.datapoint_template = _.template('<div><span class="category_label"><%=label%>: </span> <span class="category_value"><%=value%></span></div>');
     this.twitter_account_row = _.template($("#twitter_account_rows").html());
     this.twitter_account_head = _.template($("#twitter_account_head").html());
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
@@ -99,6 +100,8 @@ var GVCategoriesView = Backbone.View.extend({
       that.post_ids = that.category_data.dimension(function(d){return d.post_id});
       that.renderCategoryPosts(that.publication_dates.top(400));
       that.renderCategoryTimeseries(that.publication_dates.top(null));
+      that.post_total = data.length;
+      $('#category_stats').append(that.datapoint_template({label:"Total Posts", value:that.post_total}));
     });
 
     // load category twitter data
@@ -110,7 +113,8 @@ var GVCategoriesView = Backbone.View.extend({
       that.twitter_cat_posts = that.twitter_data.dimension(function(d){return d.category_posts_count});
       that.account_name = that.twitter_data.dimension(function(d){return d.account});
       that.twitter_posts_sort();
-      console.log(1);
+      that.category_account_total = data.length;
+      $('#category_stats').append(that.datapoint_template({label:"Twitter Accounts Cited", value:that.category_account_total}));
     });
 
 

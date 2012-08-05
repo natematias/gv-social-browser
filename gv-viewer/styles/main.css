@@ -13,3 +13,23 @@
 #category_timeseries{
   height:400px;
 }
+
+.twitter_account{
+  cursor:pointer;
+}
+.twitter_account:hover{
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 -1px 0 rgba(0, 0, 0, 0.25) inset;
+  background:#666;
+}
+
+td.post_title:hover{
+  background:#eee;
+  cursor:pointer;
+}
+a.label{
+  margin:2px;
+}
+
+.twitter_account_template{
+  display:inline-block;
+}

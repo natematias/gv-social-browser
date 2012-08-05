@@ -2,7 +2,6 @@
   <h1 id="category_title">Posts and Twitter Citation Volume on Global Voices</h1>
   <p>Select a GV category to view posts and Tweets over time. This graph only includes categories from Oct 2004 through July 2012 with at least 40 posts.</p>
   <span class="btn" id="select_categories">Select Category</span>
-  <span class="btn" id="render_social_graph">Render Social Graph</span>
   <p id="categories"></p>
    
   </select></p>
@@ -13,13 +12,28 @@
 <div id="twitter_graph"></div>
 
 <div class="row">
-<table id="datatable" class="table table-condensed table-striped">
+<div class="span9">
+<table id="post_table" class="table table-condensed table-striped">
       <thead>
+<!--        <tr><th span="3"><h3>Posts</h3></th></tr>
         <tr>
-          <th id="posts_date_sort"><span class="btn">Date</span></th><th>Title</th><th id="posts_tweet_sort" ><span class="btn">Twitter Acct #</span></th>
-        </tr>
+          <th id="posts_date_sort"><span class="btn">date</span></th><th id="posts_tweet_sort" ><span class="btn">twitter citation</span></th><th>title</th>
+        </tr>-->
       </thead>
 </table>
+</div>
+<div class="span3">
+  <table id="twitter_table" class="table table-condensed table-striped">
+    <thead>
+<!--      <tr><th span="3"><h3>Twitter Accounts</h3></th></tr>
+      <tr>
+        <th id="twitter_citation_sort"><span class="btn">posts</span></th>
+        <th id="twitter_collocation_sort"><span class="btn">collocation</span></th>
+        <th>account name</th>
+      </tr>-->
+    </thead>
+  </table>
+</div>
 
 
 </div>

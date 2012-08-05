@@ -2,24 +2,37 @@ var GVCategoriesView = Backbone.View.extend({
      
   events: function() {
     return {
+      "click #twitter_collocation_sort": "twitter_collocation_sort",
+      "click #twitter_posts_sort": "twitter_posts_sort",
       "click #posts_date_sort": "posts_date_sort",
       "click #posts_tweet_sort": "posts_tweet_sort",
       "click .post": "view_post",
       "click #close_post": "close_post",
+      "click #close_twitter_account": "close_twitter_account",
       "click #toggle_post": "toggle_post",
-      "click #select_categories": "select_categories"
+      "click #select_categories": "select_categories",
+      "click .twitter_account": "view_twitter_account",
     }
   },
 
   initialize: function(){
     _.bindAll(this, 'render');
     var that = this;
+
     this.category_link = _.template('<a href="#/categories/<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
-    this.twitter_account_template = _.template('<a class="btn btn-mini btn-info" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
+    this.twitter_account_template = _.template('<a class="label label-inverse twitter_account_template" href="http://twitter.com/#!/<%=account%>"><%=account%></a>');
+    this.twitter_account_row = _.template($("#twitter_account_rows").html());
+    this.twitter_account_head = _.template($("#twitter_account_head").html());
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
     this.category_post = _.template($("#category_post").html());
+    // abandoned because I want to have all posts for an account listed, not just for that category
+    //this.post_link_template = _.template('<div><a class="twitter_post" id="tp<%=post.post_id%>"><%=post.title%></a></div>')
+    this.post_link_template = _.template('<div><a class="twitter_post" href="<%=post.link%>"><%=post.title%></a></div>')
+
+
     this.yearweek = d3.time.format("%Y%U");
+
     jQuery.getJSON("data/categories.json", function(data){
       that.categories = data;
     });
@@ -72,6 +85,7 @@ var GVCategoriesView = Backbone.View.extend({
     category = category_option.html();
     $('#category_title').html( this.category_title({category:category}));
 
+    // load category posts
     jQuery.getJSON("data/categories/" + category + ".json", function(data){
       that.category_data = crossfilter(data);
       that.publication_dates = that.category_data.dimension(function(d){return d3.time.day(new Date(d.publication_date))});      
@@ -81,9 +95,20 @@ var GVCategoriesView = Backbone.View.extend({
       that.twitter_days = that.twitter_group.reduce(function(p,v){return p+v.twitter_accounts.length}, function(p,v){return p-v.twitter_accounts.length}, function(p,v){return 0;});
       //that.twitter_days = that.twitter_accounts.group(function(date){return that.yearweek(date)});
       that.post_ids = that.category_data.dimension(function(d){return d.post_id});
-      that.renderCategoryPosts(that.publication_dates.top(200));
+      that.renderCategoryPosts(that.publication_dates.top(400));
       that.renderCategoryTimeseries(that.publication_dates.top(null));
     });
+
+    // load category twitter data
+    jQuery.getJSON("data/twitter/" + category + "_twitter.json", function(data){
+      that.twitter_data = crossfilter(data);
+      that.twitter_posts = that.twitter_data.dimension(function(d){return d.posts_count});      
+      that.twitter_collocations = that.twitter_data.dimension(function(d){return d.collocation_count});
+      that.account_name = that.twitter_data.dimension(function(d){return d.account});
+      that.twitter_posts_sort();
+      console.log(1);
+    });
+
 
     $('.category').removeClass("btn-inverse");
     //$('#categories').hide();
@@ -91,30 +116,59 @@ var GVCategoriesView = Backbone.View.extend({
     console.log("made it to the end!");
   },
 
-  createCategoryTwitterHash: function(dimension){
-    var that = this;
-    that.category_twitter_hash= {nodes:[], links:[]};
-    
-    $.each(dimension.top(Infinity), function(key, post){
-      for(var a=0; a < post.twitter_accounts.length; a++){
-        account_a = post.twitter_accounts[a][0];
-        account_a_index = that.findNameInArray(that.category_twitter_hash.nodes, account_a);
-        if(account_a_index == -1){ // if it doesn't exist, make it
-          that.category_twitter_hash.nodes.push({name: account_a, group:1});
-          account_a_index = that.category_twitter_hash.nodes.length;
-        }
 
-        for(var b = a+1; b<post.twitter_accounts.length; b++){
-          account_b = post.twitter_accounts[b][0];
-          account_b_index = that.findNameInArray(that.category_twitter_hash.nodes, account_b);
-          if(account_b_index == -1){ // if it doesn't exist, make it
-            that.category_twitter_hash.nodes.push({name: account_b, group:1});
-            account_b_index = that.category_twitter_hash.nodes.length;
-          }
-          that.incrementLink(that.category_twitter_hash, account_a_index, account_b_index);
-        }
-        
-      }
+  view_twitter_account: function(e){
+    that = this;
+    var account_button = $(e.target);
+    var account_name = account_button.html();
+    this.account_name.filter(account_name); //horrible kluge
+    var account = this.account_name.top(1)[0];//any better way to select?
+    this.account_name.filter(null);//reset filter
+    var twitter_accounts_html = "";
+
+    // now open the window
+    $.ajax({url:"templates/twitter_account.template",
+                type: "GET",
+                dataType: "text",
+                success: function(data){
+                  twitter_account_template = _.template(data);
+                  $(that.el).append(twitter_account_template(account));
+
+                  //now show twitter collocations
+                  $.each(account.collocations, function(account, weight){
+                    twitter_accounts_html += that.twitter_account_template({account:account});
+                  });
+                  $('#twitter_collocations').append(twitter_accounts_html);
+                  window.scrollTo(0,80);
+                  $.each(account.posts, function(post_id, title){
+                    //now show the post links
+                    jQuery.getJSON("data/postdata/" + post_id + ".json", function(data){
+                      $('#post_links').append(that.post_link_template({post:data}));
+                    });
+                  });
+                }
+      });
+  },
+
+  twitter_posts_sort: function(){
+   this.render_twitter_table(this.twitter_posts.top(400))
+  },
+
+  twitter_collocation_sort: function(){
+   this.render_twitter_table(this.twitter_collocations.top(400))
+  },
+
+  close_twitter_account: function(e){
+    $("#twitter_account").remove();
+  },
+
+  render_twitter_table: function(dimension){
+    that = this;
+    var twitter_table = $("#twitter_table")
+    twitter_table.empty();
+    twitter_table.append(that.twitter_account_head());
+    $.each(dimension, function(account_name, account){
+      twitter_table.append(that.twitter_account_row(account));
     });
   },
 
@@ -235,11 +289,11 @@ var GVCategoriesView = Backbone.View.extend({
   
   renderCategoryPosts: function(dimension){
     var that = this;
-    var datatable = $("#datatable");
-    datatable.empty();
-    datatable.append(this.category_post_head());
+    var post_table = $("#post_table");
+    post_table.empty();
+    post_table.append(this.category_post_head());
     $.each(dimension, function(key, post){
-      datatable.append(that.category_post({post:post}));
+      post_table.append(that.category_post({post:post}));
     });
   },
 
@@ -247,6 +301,10 @@ var GVCategoriesView = Backbone.View.extend({
     var that = this;
     post_row = $(e.target).parent();
     post_id = post_row.attr("id");
+    if(post_row.attr("id") ==undefined){
+      post_id = $(e.target).attr("id")
+      post_id = post_id.substring(2,post_id.length);
+    }
 
     this.post_ids.filter(post_id);// horrible kluge
     var post = this.post_ids.top(1)[0];//any better way to select?
@@ -268,64 +326,12 @@ var GVCategoriesView = Backbone.View.extend({
                 $(that.el).append(post_template({post:post_data}));
                 $('#post_twitter_accounts').after(twitter_accounts_html);
                 $('#post_content').hide()
+                window.scrollTo(0, 80);
               }
             });
       });
   },
 
-  renderSocialGraph: function(){
-    this.createCategoryTwitterHash(this.twitter_accounts);
-    $("#twitter_graph svg").remove();
-    var that= this;
-    var width = 960,
-        height = 960;
-
-    var color = d3.scale.category20();
-
-    var force = d3.layout.force()
-        .charge(-120)
-        .linkDistance(5)
-        .size([width, height]);
-
-    var svg = d3.select("#twitter_graph").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-    /*d3.json("data/miserables.json", function(json) {*/
-      force
-          .nodes(that.category_twitter_hash.nodes)
-          .links(that.category_twitter_hash.links)
-          .start();
-
-      var link = svg.selectAll("line.link")
-          .data(that.category_twitter_hash.links)
-          .enter().append("line")
-          .attr("class", "link")
-          .style("stroke-width", function(d) { return Math.sqrt(d.value); });
-
-      var node = svg.selectAll("circle.node")
-          .data(that.category_twitter_hash.nodes)
-          .enter().append("circle")
-          .attr("class", "node")
-          .attr("r", 4)
-          .style("fill", function(d) { return color(d.group); })
-          .call(force.drag);
-
-      node.append("title")
-          .text(function(d) { return d.name; });
-
-      force.on("tick", function() {
-        link.attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
-
-        node.attr("cx", function(d) { return d.x; })
-          .attr("cy", function(d) { return d.y; });
-      });
-    //});
-  },
-  
   toggle_post: function(e){
     post = $("#post_content");
     if(post.is(":visible")){

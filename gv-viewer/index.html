@@ -38,24 +38,26 @@
 
     <!-- Inline Templates -->
     <script type="text/template" id="twitter_account_rows">
-    <tr><td><div class="btn btn-info twitter_account"><%=account%></div></td><td><%=collocation_count%></td><td><%=posts_count%></td></tr>
+    <tr><td><%=collocation_count%></td><td><%=posts_count%></td><td><span class="label label-inverse twitter_account"><%=account%></span></td></tr>
     </script>
     <script type="text/template" id="twitter_account_head">
       <thead>
+        <tr><th colspan="3"><h3>Twitter Accounts</h3></th></tr>
         <tr>
-          <th>Name</th><th id="collocation_sort" ><span class="btn">collocation #</span></th><th id="posts_sort" ><span class="btn">post #</span></th>
+  <th id="twitter_collocation_sort" ><span class="btn">collocation</span></th><th id="twitter_posts_sort" ><span class="btn">posts</span></th><th>account name</th>
         </tr>
       </thead>
     </script>
     <script type="text/template" id="category_post_head">
       <thead>
+        <tr><th colspan="3" align="left"><h3>Twitter Citation in Blog Post</h3></th></tr>
         <tr>
-          <th id="posts_date_sort"><span class="btn">Date</span></th><th>Title</th><th id="posts_tweet_sort" ><span class="btn">Twitter Acct #</span></th>
+          <th id="posts_date_sort"><span class="btn">date</span><th id="posts_tweet_sort" ><span class="btn">#</span></th></th><th>title</th>
         </tr>
       </thead>
     </script>
     <script type="text/template" id="category_post">
-    <tr class="post" id="<%=post.post_id%>"><td><h6><%=new Date(Date.parse(post.publication_date)).toDateString()%></h6></td><td><%=post.title%></td><td><%=post.twitter_accounts.length%></td></tr>
+    <tr class="post" id="<%=post.post_id%>"><td><nobr><h6><%=new Date(Date.parse(post.publication_date)).toDateString()%></h6></nobr></td><td align="center"><%=post.twitter_accounts.length%></td><td class="post_title"><%=post.title%></td></tr>
     </script>
 
     <script type="text/javascript" charset="utf-8" src="lib/jquery-1.7.2.min.js"></script>

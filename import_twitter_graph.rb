@@ -69,6 +69,7 @@ class TwitterAccount
     categories.each do |category|
       @category_collocations[category] = {} if(!@category_collocations.has_key? category)
       twitter_accounts.each do |account|
+        next if account == @account
         if !@category_collocations[category].has_key? account
           @category_collocations[category][account] = 1 
         else

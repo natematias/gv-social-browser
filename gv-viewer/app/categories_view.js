@@ -2,7 +2,6 @@ var GVCategoriesView = Backbone.View.extend({
      
   events: function() {
     return {
-      "click .category": "select_category",
       "click #posts_date_sort": "posts_date_sort",
       "click #posts_tweet_sort": "posts_tweet_sort",
       "click .post": "view_post",
@@ -15,7 +14,7 @@ var GVCategoriesView = Backbone.View.extend({
   initialize: function(){
     _.bindAll(this, 'render');
     var that = this;
-    this.category_link = _.template('<div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div>');
+    this.category_link = _.template('<a href="#/categories/<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
     this.twitter_account_template = _.template('<a class="btn btn-mini btn-info" href="http://twitter.com/#!/<%=account%>">@<%=account%></a>');
     this.category_title = _.template('Post and Twitter Volume: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
@@ -53,6 +52,7 @@ var GVCategoriesView = Backbone.View.extend({
         that.select_category({"target":btn[0]});
       }
     }
+    this.delegateEvents();
     return this;
   },
 
@@ -70,7 +70,6 @@ var GVCategoriesView = Backbone.View.extend({
     var that = this;
     category_option = $(e.target); 
     category = category_option.html();
-    $('#categories').hide();
     $('#category_title').html( this.category_title({category:category}));
 
     jQuery.getJSON("data/categories/" + category + ".json", function(data){
@@ -87,7 +86,9 @@ var GVCategoriesView = Backbone.View.extend({
     });
 
     $('.category').removeClass("btn-inverse");
+    //$('#categories').hide();
     category_option.addClass("btn-inverse")
+    console.log("made it to the end!");
   },
 
   createCategoryTwitterHash: function(dimension){
@@ -254,7 +255,7 @@ var GVCategoriesView = Backbone.View.extend({
     var twitter_accounts_html = "";
     $.each(post.twitter_accounts, function(key, account){
       // first array item due to a bug in the data production code
-      twitter_accounts_html += that.twitter_account_template({account:account[0]});
+      twitter_accounts_html += that.twitter_account_template({account:account});
     });
     
     jQuery.getJSON("data/postdata/" + post_id + ".json", function(data){

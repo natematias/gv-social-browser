@@ -1,18 +1,26 @@
 <div class="hero-unit">
-  <h1 id="category_title">Posts and Twitter Citation Volume on Global Voices</h1>
+  <h1 id="category_title">Whose Voices? Twitter Citation in Global Voices</h1>
+  <p><a href="http://globalvoicesonline">Global Voices</a> translates and amplifies blogs and citizen media from around the world.</p>
+  <p>Whose voices does Global Voices amplify? This datavisualisation examines mention of twitter accounts in article text from Oct 2004 through July 2012.</p>
+  <p>Not sure where to start? Try <a href="#/categories/egypt">Egypt</a>, <a href="#/categories/mexico">Mexico</a>, <a href="#/categories/feature">Feature</a>, or <a href="#/categories/protest">Protest</a>.
+  <p align="right">by <a href="http://twitter.com/natematias">J. Nathan Matias</a><br/>MIT Media Lab<br/>Center for Civic Media</p>
+  </p>
   <hr/>
   <div id="category_stats"></div>
   <hr/>
-  <p>Select a GV category to view posts and Tweets over time. This graph only includes categories from Oct 2004 through July 2012 with at least 40 posts.</p>
   <span class="btn" id="select_categories">Select Category</span>
-  <p id="categories"></p>
+  <div id="categories">
+  <p>Select a GV category to view posts and Tweets over time.</p>
+  </div>
    
   </select></p>
 </div>
 
+<h2 id="post_volume_label"></h2>
 <div id="post_timeseries" style="height:200px;"><svg style="height:200px;"></svg></div>
+
+<h2 id="twitter_volume_label"></h2>
 <div id="twitter_timeseries" style="height:200px;"><svg style="height:200px;"></svg></div>
-<div id="twitter_graph"></div>
 
 <div class="row">
 <div class="span7">

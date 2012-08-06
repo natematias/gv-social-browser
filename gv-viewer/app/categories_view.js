@@ -23,10 +23,11 @@ var GVCategoriesView = Backbone.View.extend({
 
     this.category_link = _.template('<a href="#/categories/<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
     this.twitter_account_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="http://twitter.com/#!/<%=account%>"><%=account%></a>');
+    this.category_weight_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="#/categories/<%=category%>"><%=category%> (<%=count%>)</a>');
     this.datapoint_template = _.template('<div><span class="category_label"><%=label%>: </span> <span class="category_value"><%=value%></span></div>');
     this.twitter_account_row = _.template($("#twitter_account_rows").html());
     this.twitter_account_head = _.template($("#twitter_account_head").html());
-    this.category_title = _.template('Post and Twitter Volume: <%=category%>');
+    this.category_title = _.template('Whose Voices: <%=category%>');
     this.category_post_head = _.template($("#category_post_head").html());
     this.category_post = _.template($("#category_post").html());
     // abandoned because I want to have all posts for an account listed, not just for that category
@@ -87,6 +88,7 @@ var GVCategoriesView = Backbone.View.extend({
     category_option = $(e.target); 
     this.category = category = category_option.html();
     $('#category_title').html( this.category_title({category:category}));
+    $('#category_stats').empty();
 
     // load category posts
     jQuery.getJSON("data/categories/" + category + ".json", function(data){
@@ -156,6 +158,11 @@ var GVCategoriesView = Backbone.View.extend({
                   });
                   $('#category_twitter_collocations').append(twitter_accounts_html);
 
+                  category_weight_html = "";
+                  $.each(account.categories, function(category, weight){
+                    category_weight_html += that.category_weight_template({category:category, labeltype:"label-info", count:weight});
+                  });
+                  $('#all_categories').append(category_weight_html);
 
                   window.scrollTo(0,80);
                   $.each(account.posts, function(post_id, title){
@@ -227,21 +234,28 @@ var GVCategoriesView = Backbone.View.extend({
 
   renderCategoryTimeseries: function(dimension){
     var that = this;
+    $("#post_volume_label").html("Number of Posts, per week, in Global Voices " + this.category + ":")
+    $("#twitter_volume_label").html("Unique Twitter Accounts Cited, per week, in Global Voices " + this.category + ":")
     nv.addGraph(function() {
       var post_graph = nv.models.multiBarChart();
       var twitter_graph = nv.models.multiBarChart();
-      post_graph.height=150;
-      twitter_graph.height=150;
+      post_graph.height=160;
+      twitter_graph.height=160;
 
-      post_data = [{ key: "Posts", values: that.buildWeekData(that.publication_days)}]
-      twitter_data = [{key: "Twitter Accts", values: that.buildWeekData(that.twitter_days) }];
+      post_data = [{ key: "Number of " + that.category + " posts, per week", values: that.buildWeekData(that.publication_days)}]
+      twitter_data = [{key: "Twitter accounts cited in " + that.category + ", per week", values: that.buildWeekData(that.twitter_days) }];
  
       //post_graph.xAxis.tickFormat(d3.format(',f'));
+      var monthyear = d3.time.format("%b, %Y");
       post_graph.xAxis.tickFormat(function(d){
-        //console.log(d);
-        return d;//post_data[0].values[d].week.substring(0,4);
+        date = post_data[0].values[d].date;
+        return monthyear(date);
       });
-      twitter_graph.xAxis.tickFormat(d3.format(',f'));
+
+      twitter_graph.xAxis.tickFormat(function(d){
+        return monthyear(post_data[0].values[d].date);
+      });
+      //twitter_graph.xAxis.tickFormat(d3.format('d'));
  
       post_graph.yAxis.tickFormat(d3.format(',.1f'));
       twitter_graph.yAxis.tickFormat(d3.format(',.1f'));
@@ -277,10 +291,12 @@ var GVCategoriesView = Backbone.View.extend({
     var current_week = data_group.all()[current_week_record]
     var incrementor = 0;
     for(var year = start_year; year <= end_year; year++){
+      date_object = new Date("1 Jan " + year);
+      date_object.setDate(date_object.getDate()+7*start_week);
       for(week = start_week; true; week++){
         full_week = year.toString() + ("0" + week).slice (-2); //week.toString();
         if(current_week!=null && full_week == current_week.key){
-          graphdata.push({x:incrementor, y:current_week.value, week:full_week});
+          graphdata.push({x:incrementor, y:current_week.value, week:full_week, date:new Date(date_object)});
           current_week_record++;
           current_week = data_group.all()[current_week_record];
           if(current_week_record >= data_group.all().length){
@@ -288,9 +304,10 @@ var GVCategoriesView = Backbone.View.extend({
             break;
           }
         }else{
-          graphdata.push({x:incrementor, y:0});
+          graphdata.push({x:incrementor, y:0, date:date_object});
         }
-        incrementor ++;
+        date_object.setDate(date_object.getDate()+7);
+        incrementor++;
         if(week >= 52){
           start_week=0;
           break;
@@ -339,7 +356,7 @@ var GVCategoriesView = Backbone.View.extend({
     var twitter_accounts_html = "";
     $.each(post.twitter_accounts, function(key, account){
       // first array item due to a bug in the data production code
-      twitter_accounts_html += that.twitter_account_template({account:account});
+      twitter_accounts_html += that.twitter_account_template({labeltype:"",account:account});
     });
     
     jQuery.getJSON("data/postdata/" + post_id + ".json", function(data){

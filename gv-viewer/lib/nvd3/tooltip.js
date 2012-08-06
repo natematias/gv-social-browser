@@ -33,7 +33,6 @@
         scrollLeft = body.scrollLeft,
         left, top;
 
-
     switch (gravity) {
       case 'e':
         left = pos[0] - width - dist;

@@ -104,7 +104,7 @@ nv.models.multiBar = function() {
       groups
           .attr('class', function(d,i) { return 'group series-' + i })
           .classed('hover', function(d) { return d.hover })
-          .style('fill', function(d,i){ return color[i % color.length] })
+          .style('fill', function(d,i){  return color[i % color.length] })
           .style('stroke', function(d,i){ return color[i % color.length] });
       d3.transition(groups)
           .style('stroke-opacity', 1)

@@ -16,6 +16,7 @@ var GVRouter = Backbone.Router.extend({
 
   categories: function(category){
     $("#frame").html(gvCategoriesView.el);
+    $("#twitter_account").remove();
     gvCategoriesView.render(category);
   },
 });

@@ -1,3 +1,28 @@
+.navbar-inner{
+  background-image: -moz-linear-gradient(center top, #44aE7C, #006E3C);
+  background-color: #006E3C;
+  color:black;
+}
+
+.navbar .brand{
+  color:white;
+}
+
+.navbar .nav .active >a{
+  background:none;
+  /*background:#228E5C;*/
+  border-left:1px solid white;
+  border-right:1px solid white;
+}
+
+
+.navbar .nav .active >a:hover{
+  background:none;
+  background-image: -moz-linear-gradient(center top, #228E5C, #004E1C);
+  border-left:1px solid white;
+  border-right:1px solid white;
+}
+
 #main_container{
   margin-top:80px;
 }
@@ -50,4 +75,14 @@ a.label{
 .category_value{
   font-size:42px;
   font-weight:bold;
+}
+
+/*for the graphs*/
+.nvtooltip{
+  margin-left:100px;
+  padding:10px;
+  background:#eee;
+  border:1px solid #aaa;
+  border-radius:10px;
+  font-size:150%;
 }

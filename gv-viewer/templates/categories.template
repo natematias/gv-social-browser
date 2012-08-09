@@ -1,16 +1,18 @@
 <div class="hero-unit">
   <h1 id="category_title">Whose Voices? Twitter Citation in Global Voices</h1>
   <p><a href="http://globalvoicesonline">Global Voices</a> translates and amplifies blogs and citizen media from around the world.</p>
-  <p>Whose voices does Global Voices amplify? This datavisualisation examines mention of twitter accounts in article text from Oct 2004 through July 2012.</p>
-  <p>Not sure where to start? Try <a href="#/categories/egypt">Egypt</a>, <a href="#/categories/mexico">Mexico</a>, <a href="#/categories/feature">Feature</a>, or <a href="#/categories/protest">Protest</a>.
-  <p align="right">by <a href="http://twitter.com/natematias">J. Nathan Matias</a><br/>MIT Media Lab<br/>Center for Civic Media</p>
+  <p>Whose voices does Global Voices share most? This visualisation examines mention of Twitter accounts in article text from Oct 2004 through July 2012.</p>
+  <p>Learn more about the project by reading my blog post, "<a href='http://civic.mit.edu/blog/natematias/media-representation-in-the-arab-uprisings-egypt-and-libya'>Media Representation in the Arab Uprisings: Egypt and Libya</a>, or <a href="https://vimeo.com/47062773">watching this demo video</a>.</p>
+  <p>Not sure where to start? Try <a href="#egypt">Egypt</a>, <a href="#brazil">Brazil</a>, <a href="#feature">Feature</a>, or <a href="#protest">Protest</a>.
+  <p align="right">by <a href="http://twitter.com/natematias">J. Nathan Matias</a><br/>MIT Media Lab<br/><a href="http://civic.mit.edu">Center for Civic Media</a></p>
+  <p style="font-size:92%">P.S. If you're having difficulties, try viewing this experimental visualisation in the <a href="http://firefox.com">Firefox Web Browser</a></p>
   </p>
   <hr/>
   <div id="category_stats"></div>
   <hr/>
-  <span class="btn" id="select_categories">Select Category</span>
-  <div id="categories">
   <p>Select a GV category to view posts and Tweets over time.</p>
+  <span class="btn" id="select_categories">Show / Hide Full Category List</span>
+  <div id="categories">
   </div>
    
   </select></p>

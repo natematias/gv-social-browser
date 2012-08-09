@@ -21,9 +21,9 @@ var GVCategoriesView = Backbone.View.extend({
     _.bindAll(this, 'render');
     var that = this;
 
-    this.category_link = _.template('<a href="#/categories/<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
+    this.category_link = _.template('<a href="#<%=category%>"><div class="btn btn-mini category" id="<%=category%>btn"><%=category%></div></a>');
     this.twitter_account_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="http://twitter.com/#!/<%=account%>"><%=account%></a>');
-    this.category_weight_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="#/categories/<%=category%>"><%=category%> (<%=count%>)</a>');
+    this.category_weight_template = _.template('<a class="label <%=labeltype%> twitter_account_template" href="#<%=category%>"><%=category%> (<%=count%>)</a>');
     this.datapoint_template = _.template('<div><span class="category_label"><%=label%>: </span> <span class="category_value"><%=value%></span></div>');
     this.twitter_account_row = _.template($("#twitter_account_rows").html());
     this.twitter_account_head = _.template($("#twitter_account_head").html());
@@ -389,10 +389,10 @@ var GVCategoriesView = Backbone.View.extend({
   },
  
   posts_tweet_sort: function(){
-    this.renderCategoryPosts(this.twitter_accounts.top(200));
+    this.renderCategoryPosts(this.twitter_accounts.top(400));
   },
 
   posts_date_sort: function(){
-    this.renderCategoryPosts(this.publication_dates.top(200));
+    this.renderCategoryPosts(this.publication_dates.top(400));
   },
 });
